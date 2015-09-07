@@ -10,8 +10,7 @@ def default_headers():
 
 
 class Headers(collections.MutableMapping):
-    SEPARATOR = '\r\n'
-    DEFINE = ': '
+    CRLF = '\r\n'
 
     def __init__(self, *args, **kwargs):
         self._store = dict()
@@ -21,7 +20,7 @@ class Headers(collections.MutableMapping):
         return self._store[self.__keytransform__(key)]
 
     def __setitem__(self, key, val):
-        self._store[self.__keytransform__(key)] = str(val)
+        self._store[self.__keytransform__(key)] = str(val).strip()
 
     def __delitem__(self, key):
         del self._store[self.__keytransform__(key)]
@@ -33,22 +32,22 @@ class Headers(collections.MutableMapping):
         return len(self._store)
 
     def __keytransform__(self, key):
-        return str(key)
+        return str(key).strip()
 
     def __format__(self, key, val):
-        return key + self.DEFINE + val + self.SEPARATOR
+        return key + ': ' + val + self.CRLF
 
     def dump(self):
         return ''.join(
             self.__format__(key, val) for (key, val) in self._store.items()
-            ) + self.SEPARATOR
+            ) + self.CRLF
 
     def add(self, msg):
         lines = msg.splitlines()
         for line in lines:
-            pair = line.split(self.DEFINE)
+            pair = line.split(':')
             if len(pair) >= 2:
-                self._store[pair[0]] = pair[1]
+                self[pair[0]] = pair[1]
 
     def load(self, msg):
         self._store.clear()

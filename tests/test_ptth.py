@@ -8,6 +8,9 @@ import ptth
 
 if __name__ == '__main__':
     class handler:
+        def ready_to_handle(self):
+            pass
+
         def handle_request(self, request):
             print request
 
