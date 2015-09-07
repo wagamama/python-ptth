@@ -3,7 +3,7 @@ import threading
 import socket
 from select import select
 from urlparse import urlparse
-from .model import Headers
+import header
 
 
 class Session(threading.Thread):
@@ -25,7 +25,7 @@ class Session(threading.Thread):
             pass
 
     def _construct_headers(self, headers):
-        self._headers = Headers.default_headers()
+        self._headers = header.default_headers()
         self._headers.update({'Connection': 'Upgrade',
                               'Upgrade': 'PTTH/1.0'})
 

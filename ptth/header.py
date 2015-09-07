@@ -2,16 +2,16 @@
 import collections
 
 
+def default_headers():
+    return Headers({
+        'Accept': '*/*',
+        'Accept-Encoding': ', '.join(('gzip', 'deflate'))
+    })
+
+
 class Headers(collections.MutableMapping):
     SEPARATOR = '\r\n'
     DEFINE = ': '
-
-    @classmethod
-    def default_headers(cls):
-        return cls({
-            'Accept': '*/*',
-            'Accept-Encoding': ', '.join(('gzip', 'deflate'))
-            })
 
     def __init__(self, *args, **kwargs):
         self._store = dict()
