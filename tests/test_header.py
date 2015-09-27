@@ -47,11 +47,10 @@ class TestHeaders(unittest.TestCase):
         self.assertEqual('f', headers['e'])
 
     def test_load(self):
-        headers = header.Headers()
-        headers.load('a: b\r\n' +
-                     'c: d\r\n' +
-                     'e: f\r\n' +
-                     '\r\n')
+        headers = header.load('a: b\r\n' +
+                              'c: d\r\n' +
+                              'e: f\r\n' +
+                              '\r\n')
         self.assertEqual(3, len(headers))
         self.assertTrue('a' in headers)
         self.assertTrue('c' in headers)

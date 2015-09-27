@@ -4,11 +4,10 @@ import socket
 from select import select
 from urlparse import urlparse
 import header
+import request
 
 
 class Session(threading.Thread):
-    POST_METHOD = 'POST {} HTTP/1.1\r\n'
-
     def __init__(self, handler):
         super(Session, self).__init__()
         self._handler = handler
@@ -20,7 +19,7 @@ class Session(threading.Thread):
         if result.scheme == 'http':
             self._host = result.hostname
             self._port = result.port if result.port else 80
-            self._path = result.path
+            self._url = result.path
         else:
             pass
 
@@ -45,7 +44,7 @@ class Session(threading.Thread):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.connect((self._host, self._port))
         self._socket.send(
-            self.POST_METHOD.format(self._path) + self._headers.dump())
+            request.Request('POST', self._url, self._headers).dump())
 
         while True:
             r_ready_list, _, _ = select([self._socket], [], [])

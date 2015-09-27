@@ -2,6 +2,9 @@
 import collections
 
 
+CRLF = '\r\n'
+
+
 def default_headers():
     return Headers({
         'Accept': '*/*',
@@ -9,9 +12,13 @@ def default_headers():
     })
 
 
-class Headers(collections.MutableMapping):
-    CRLF = '\r\n'
+def load(msg):
+    headers = Headers()
+    headers.add(msg)
+    return headers
 
+
+class Headers(collections.MutableMapping):
     def __init__(self, *args, **kwargs):
         self._store = dict()
         self.update(dict(*args, **kwargs))
@@ -35,12 +42,12 @@ class Headers(collections.MutableMapping):
         return str(key).strip()
 
     def __format__(self, key, val):
-        return key + ': ' + val + self.CRLF
+        return key + ': ' + val + CRLF
 
     def dump(self):
         return ''.join(
             self.__format__(key, val) for (key, val) in self._store.items()
-            ) + self.CRLF
+            ) + CRLF
 
     def add(self, msg):
         lines = msg.splitlines()
@@ -48,7 +55,3 @@ class Headers(collections.MutableMapping):
             pair = line.split(':')
             if len(pair) >= 2:
                 self[pair[0]] = pair[1]
-
-    def load(self, msg):
-        self._store.clear()
-        self.add(msg)
