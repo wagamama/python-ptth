@@ -3,8 +3,10 @@ import threading
 import socket
 from select import select
 from urlparse import urlparse
+import httplib
 import header
 import request
+import response
 
 
 class Session(threading.Thread):
@@ -57,9 +59,7 @@ class Session(threading.Thread):
                     data = self._socket.recv(4096)
                     self._handler.handle_request(data)
                     self._socket.send(
-                        'HTTP/1.1 200 OK\r\n' +
-                        'Content-Length: 0\r\n' +
-                        '\r\n'
+                        response.Response(httplib.OK).dump()
                     )
 
     def stop(self):
