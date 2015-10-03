@@ -13,8 +13,8 @@ METHOD_URL_RE = re.compile(METHOD_URL_PATTERN)
 
 
 def parse_method_and_url(msg):
-    method = ''
-    url = ''
+    method = None
+    url = None
 
     match = METHOD_URL_RE.match(msg)
     if match is not None:
@@ -23,17 +23,6 @@ def parse_method_and_url(msg):
         url = groups[1]
 
     return (method, url)
-
-
-def load(msg):
-    lines = msg.split(CRLF)
-    method, url = parse_method_and_url(lines[0])
-    headers = header.Headers()
-    for header_str in lines[1:-1]:
-        headers.add(header_str)
-    data = lines[-1] if len(lines[-1]) > 0 else None
-
-    return Request(method, url, headers, data)
 
 
 class Request(object):
@@ -57,3 +46,22 @@ class Request(object):
             request_str += self.data
 
         return request_str
+
+    @staticmethod
+    def load(msg):
+        msg = msg.split(CRLF+CRLF, 1)
+
+        if len(msg) != 2:
+            return None
+
+        data = msg[1]
+        msg = msg[0].split(CRLF, 1)
+        method, url = parse_method_and_url(msg[0])
+        
+        if method is None or url is None:
+            return None
+
+        headers = msg[1] if len(msg) == 2 else ''
+        headers = header.Headers.load(headers)
+
+        return Request(method, url, headers, data)

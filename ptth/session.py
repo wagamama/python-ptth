@@ -3,10 +3,26 @@ import threading
 import socket
 from select import select
 from urlparse import urlparse
-import httplib
 import header
 import request
 import response
+
+
+class Handler(object):
+    def __init__(self):
+        pass
+
+    def ready_to_handle(self):
+        pass
+
+    def handle_request(self, request):
+        pass
+
+    def handle_error(self, error):
+        pass
+
+    def handle_close(self):
+        pass
 
 
 class Session(threading.Thread):
@@ -26,16 +42,12 @@ class Session(threading.Thread):
             pass
 
     def _construct_headers(self, headers):
-        self._headers = header.default_headers()
-        self._headers.update({'Connection': 'Upgrade',
-                              'Upgrade': 'PTTH/1.0'})
-
-        if not headers:
-            return
-        elif isinstance(headers, dict):
-            self._headers.update(headers)
-        elif isinstance(headers, str):
-            self._headers.add(headers)
+        self._headers = header.Headers({
+            'Accept': '*/*',
+            'Accept-Encoding': ', '.join(('gzip', 'deflate')),
+            'Connection': 'Upgrade',
+            'Upgrade': 'PTTH/1.0'})
+        self._headers.add(headers)
 
     def serve(self, url, headers=None):
         self._parse_url(url)
@@ -49,18 +61,27 @@ class Session(threading.Thread):
             request.Request('POST', self._url, self._headers).dump())
 
         while True:
-            r_ready_list, _, _ = select([self._socket], [], [])
+            r_list, _, x_list = select([self._socket], [], [self._socket])
+
+            for x in x_list:
+                if not self._stop_event.is_set():
+                    self_handler.handle_error()
 
             if self._stop_event.is_set():
                 break
 
-            for r_ready in r_ready_list:
+            for r_ready in r_list:
                 if r_ready == self._socket:
                     data = self._socket.recv(4096)
-                    self._handler.handle_request(data)
-                    self._socket.send(
-                        response.Response(httplib.OK).dump()
-                    )
+                    if data is None:
+                        self._handler.handle_close()
+                    else:
+                        self._handler.handle_request(data)
+                        self._socket.send(
+                            response.Response(200).dump()
+                        )
+
+        self._handler.handle_close()
 
     def stop(self):
         self._stop_event.set()

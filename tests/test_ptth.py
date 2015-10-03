@@ -9,15 +9,18 @@ import ptth
 if __name__ == '__main__':
     class handler:
         def ready_to_handle(self):
-            pass
+            print 'ready to handle'
 
         def handle_request(self, request):
+            print 'handle request'
             print request
 
         def handle_error(self, error):
+            print 'handle error'
             pass
 
         def handle_close(self):
+            print 'handle close'
             pass
 
     h = handler()
