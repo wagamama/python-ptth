@@ -7,7 +7,7 @@ import ptth
 
 class MyHandler(ptth.Handler):
     def ready_to_handle(self):
-        '''ready to accept ptth request'''
+        ''' ready to accept ptth request '''
         pass
 
     def handle_request(self, request):
@@ -18,17 +18,18 @@ class MyHandler(ptth.Handler):
         return ptth.Response(200)
 
     def handle_error(self, error):
-        '''handle occurred error'''
+        ''' handle occurred error '''
         pass
 
     def handle_close(self):
-        '''ptth service is closed'''
+        ''' ptth service is closed '''
         pass
 
 h = MyHandler()
 session = ptth.Session(h)
 session.serve('http://host.support.ptth/')
 
+''' doing something '''
 
 session.close()
 ```
