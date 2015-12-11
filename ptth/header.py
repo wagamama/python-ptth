@@ -11,7 +11,7 @@ class Headers(collections.MutableMapping):
         self.update(dict(*args, **kwargs))
 
     def __getitem__(self, key):
-        key = self.__keytransform__(key) 
+        key = self.__keytransform__(key)
         return self._store[key] if key in self._store else ''
 
     def __setitem__(self, key, val):
@@ -44,7 +44,8 @@ class Headers(collections.MutableMapping):
             ) + CRLF
 
     def add(self, headers):
-        if isinstance(headers, dict):
+        if (isinstance(headers, dict) or
+                isinstance(headers, collections.Mapping)):
             self.update(headers)
         elif isinstance(headers, str):
             lines = headers.splitlines()

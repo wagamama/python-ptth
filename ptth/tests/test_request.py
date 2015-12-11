@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 import unittest
-import sys
-
-sys.path.append('../')
 import ptth
 
 
@@ -44,29 +41,15 @@ class TestRequest(unittest.TestCase):
         self.assertEqual('PUT', r.method)
         self.assertEqual('/sample', r.url)
 
-    def test_add_header(self):
-        r = ptth.Request('POST', '/')
-        r.add_header('header1', 'value1')
-        r.add_header('header2', 'value2')
-        self.assertEqual('value1', r.headers['header1'])
-        self.assertEqual('value2', r.headers['header2'])
+    def test_headers(self):
+        r = ptth.Request('POST', '/',
+                         headers=ptth.Headers({'a': 'b'}))
+        self.assertEqual('b', r.headers['a'])
 
-    def test_add_header_reset(self):
-        r = ptth.Request('POST', '/')
-        r.add_header('header1', 'value1')
-        r.add_header('header1', 'value2')
-        self.assertEqual('value2', r.headers['header1'])
-
-    def test_add_data(self):
-        r = ptth.Request('PUT', '/')
-        r.add_data('abcdefg\n')
+    def test_data(self):
+        r = ptth.Request('PUT', '/',
+                         data='abcdefg\n')
         self.assertEqual('abcdefg\n', r.data)
-
-    def test_add_data_reset(self):
-        r = ptth.Request('PUT', '/')
-        r.add_data('abcdefg\n')
-        r.add_data('\ngfedcba')
-        self.assertEqual('\ngfedcba', r.data)
 
     def test_load(self):
         r = ptth.Request.load('POST /test HTTP/1.1\r\n' +

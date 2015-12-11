@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 import unittest
-import sys
-
-sys.path.append('../')
 import ptth
 
 
@@ -59,6 +56,21 @@ class TestHeaders(unittest.TestCase):
             'a': 'b',
             'c': 'd',
             'e': 'f'})
+        self.assertEqual(3, len(headers))
+        self.assertTrue('a' in headers)
+        self.assertTrue('c' in headers)
+        self.assertTrue('e' in headers)
+        self.assertEqual('b', headers['a'])
+        self.assertEqual('d', headers['c'])
+        self.assertEqual('f', headers['e'])
+
+    def test_add_headers(self):
+        headers = ptth.Headers({'a': 'z'})
+        headers2 = ptth.Headers({
+            'a': 'b',
+            'c': 'd',
+            'e': 'f'})
+        headers.add(headers2)
         self.assertEqual(3, len(headers))
         self.assertTrue('a' in headers)
         self.assertTrue('c' in headers)

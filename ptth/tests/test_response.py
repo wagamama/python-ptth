@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 import unittest
-import sys
-
-sys.path.append('../')
 import ptth
 
 
@@ -44,29 +41,13 @@ class TestResponse(unittest.TestCase):
         self.assertEqual(500, r.status)
         self.assertEqual('Internal Server Error', r.reason)
 
-    def test_add_header(self):
-        r = ptth.Response(404)
-        r.add_header('header1', 'value1')
-        r.add_header('header2', 'value2')
-        self.assertEqual('value1', r.headers['header1'])
-        self.assertEqual('value2', r.headers['header2'])
+    def test_headers(self):
+        r = ptth.Response(404, headers=ptth.Headers({'a': 'b'}))
+        self.assertEqual('b', r.headers['a'])
 
-    def test_add_header_reset(self):
-        r = ptth.Response(404)
-        r.add_header('header1', 'value1')
-        r.add_header('header1', 'value2')
-        self.assertEqual('value2', r.headers['header1'])
-        
-    def test_add_data(self):
-        r = ptth.Response(404)
-        r.add_data('abcdefg\n')
+    def test_data(self):
+        r = ptth.Response(404, data='abcdefg\n')
         self.assertEqual('abcdefg\n', r.data)
-    
-    def test_add_data(self):
-        r = ptth.Response(404)
-        r.add_data('abcdefg\n')
-        r.add_data('\ngfedcba')
-        self.assertEqual('\ngfedcba', r.data)
 
     def test_load(self):
         r = ptth.Response.load('HTTP/1.1 202 Accepted\r\n' +
@@ -112,8 +93,8 @@ class TestResponse(unittest.TestCase):
         r = ptth.Response.load('HTTP/1.1 200OK\r\n')
         self.assertIsNone(r)
         r = ptth.Response.load('HTTP/1.1 200OK\r\n' +
-                              'header1: value1\r\n' +
-                              '\r\n')
+                               'header1: value1\r\n' +
+                               '\r\n')
         self.assertIsNone(r)
 
     def test_load_wrong_header(self):

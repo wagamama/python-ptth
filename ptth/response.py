@@ -28,7 +28,7 @@ class Response(object):
     def __init__(self, status, headers=None, data=None):
         self.status = status
         self.headers = headers if headers is not None else header.Headers()
-        self.data = data
+        self.data = data if data is not None else ''
 
     @property
     def reason(self):
@@ -39,21 +39,13 @@ class Response(object):
 
         return reason
 
-    def add_header(self, key, value):
-        self.headers[key] = value
-
-    def add_data(self, data):
-        self.data = data
-
     def dump(self):
-        response_str = 'HTTP/1.1 {} {}{}{}'.format(
+        response_str = 'HTTP/1.1 {} {}{}{}{}'.format(
             self.status,
             self.reason,
             CRLF,
-            self.headers.dump())
-
-        if self.data is not None:
-            response_str += self.data
+            self.headers.dump(),
+            self.data)
 
         return response_str
 
@@ -73,5 +65,5 @@ class Response(object):
 
         headers = msg[1] if len(msg) == 2 else ''
         headers = header.Headers.load(headers)
-        
+
         return Response(status, headers, data)
